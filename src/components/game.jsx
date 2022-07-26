@@ -2,6 +2,7 @@ import Board from './board'
 import React from 'react'
 import {LinesThree} from './lines' 
 import {MdOutlineRestartAlt} from "react-icons/md"
+import Message from './message'
 
 function isWinner(board) {
     let result = ""
@@ -64,43 +65,57 @@ export default class Game extends React.Component {
     constructor(props) {
         super(props);
         this.state = {board: Array(9).fill(""),
-                        player: "X"}
+                        player: "X", 
+                        result: "",
+                        visible: true,
+                        message: ""}
         this.handleClick = this.handleClick.bind(this);
         this.restart = this.restart.bind(this);
     }
 
-    
-
     componentDidUpdate() {
-        if (this.state.player === "O") {
+        var result = isWinner(this.state.board)
+
+        if (!this.state.board.includes("") && this.state.player !== "") {
+            setTimeout(() => {this.setState({player: "", visible: false, message: "draw!"})}
+            ,1000)  
+        } else if(result === "O" && this.state.player !== "") {
+            setTimeout(()=>{this.setState({player: "", visible: false, message: "O is the winner!"})}
+            ,1000)
+        } else if (this.state.player === "O") {
             let pos = miniMax(this.state.board, 0, true).pos
             setTimeout(() => { this.setState({board: this.state.board.map((item, index) => index === pos ? "O" : item),
                     player: "X"})
                     }, 1000);
-        }
+        } 
     }
 
     handleClick(e) {
-        var result = isWinner(this.state.board)
-        if (this.state.board[e] === "" && result !== "O") {
+        if (this.state.board[e] === "" && isWinner(this.state.board) !== "O") {
             this.setState({board: this.state.board.map((item, index) => 
                 index === e ? this.state.player : item),player: "O"})
-        }
+        } 
     }
+
 
     restart() {
         this.setState({board: Array(9).fill(""),
-                        player: "X"})
+            player: "X" ,
+            visible: true, 
+            message: ""})
     }
+
 
     render() {
         return (
             <div className="Screen">
-                    <div >
+                        <Message className="Message" value={this.state.message} />
+                    <div className={this.state.visible? "fadeIn" : "fadeOut"}>
                         <Board value={this.state.board} onClick={this.handleClick}/> 
-                        <MdOutlineRestartAlt className="Icon" onClick={this.restart}/>
                     </div>
+                        <MdOutlineRestartAlt className="Icon" onClick={this.restart}/>
             </div>
         )
     }
 }
+
