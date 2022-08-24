@@ -20,46 +20,44 @@ function isWinner(board) {
     return(result) 
 }
 
-function miniMax(boardCopy, depth, isComputer) {
-    if (isWinner(boardCopy) === "O") {
+// improved miniMax function with alpha beta pruning
+function miniMaxPrune(boardCopy, depth, isComputer, alpha={pos:-1, value: -Infinity}, beta={pos:-1, value: Infinity}) {
+    if (isWinner(boardCopy) === "O"){
         return {pos: -1, value:(10-depth)}
     } else if (isWinner(boardCopy) === "X") {
         return {pos: -1, value:(depth-10)}
     } else if (boardCopy.indexOf("") === -1) {
-        return {pos: -1, value: 0}
-    }
-
-    if (isComputer) {
-        let bestValue = {pos: -1, value: -Infinity}
-            for (let i = 0; i < 9; i++) {
-                if (boardCopy[i] === "") {
-                    boardCopy[i] = "O" 
-                    let value = miniMax(boardCopy, depth+1, false)
-                    if (value.value > bestValue.value) { 
-                        bestValue.pos = i
-                        bestValue.value = value.value
-                    }
-                    boardCopy[i] = "";
-                } 
-            }
-        return bestValue
-    }
-
-    if (!isComputer) {
-        let worstValue = {pos: -1, value: Infinity}
+        return {pos:-1, value: 0}
+    } else if (isComputer) {
         for (let i = 0; i < 9; i++) {
             if (boardCopy[i] === "") {
-                boardCopy[i] = "X"
-                let value = miniMax(boardCopy, depth+1, true)
-                if (value.value < worstValue.value) {
-                    worstValue.pos = i
-                    worstValue.value = value.value
-                }
+                boardCopy[i] = "O"
+                let currentMove = miniMaxPrune(boardCopy, depth+1, false, alpha, beta)
                 boardCopy[i] = "";
+                if (currentMove.value > alpha.value) {
+                    alpha = {pos: i, value: currentMove.value}
+                } else if (beta.value <= alpha.value) {
+                    return alpha
+                }
             }
         }
-        return worstValue
+        return alpha
+    } else { 
+        for (let i = 0; i < 9; i++) {
+            if (boardCopy[i] === "") {
+                boardCopy[i] = "X";
+                let currentMove = miniMaxPrune(boardCopy, depth+1, true, alpha, beta);
+                boardCopy[i] = "";
+                if (currentMove.value < beta.value) {
+                    beta = {pos: i, value: currentMove.value};
+                } else if (beta.value <= alpha.value) {
+                    return beta
+                }
+            }
+        }
+        return beta
     }
+    
 }
 
 export default class Game extends React.Component {
@@ -76,7 +74,6 @@ export default class Game extends React.Component {
 
     componentDidUpdate() {
         var result = isWinner(this.state.board)
-
         if (!this.state.board.includes("") && this.state.player !== "") {
             setTimeout(() => {this.setState({player: "", visible: false, message: "draw!"})}
             ,1000)  
@@ -84,7 +81,7 @@ export default class Game extends React.Component {
             setTimeout(()=>{this.setState({player: "", visible: false, message: "O is the winner!"})}
             ,1000)
         } else if (this.state.player === "O") {
-            let pos = miniMax(this.state.board, 0, true).pos
+            var pos = miniMaxPrune(this.state.board, 0, true).pos
             setTimeout(() => { this.setState({board: this.state.board.map((item, index) => index === pos ? "O" : item),
                     player: "X"})
                     }, 1000);
@@ -92,7 +89,7 @@ export default class Game extends React.Component {
     }
 
     handleClick(e) {
-        if (this.state.board[e] === "" && isWinner(this.state.board) !== "O") {
+        if (this.state.board[e] === "" && isWinner(this.state.board) !== "O" && this.state.player === "X") {
             this.setState({board: this.state.board.map((item, index) => 
                 index === e ? this.state.player : item),player: "O"})
         } 
