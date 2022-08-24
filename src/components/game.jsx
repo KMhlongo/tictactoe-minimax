@@ -3,6 +3,7 @@ import React from 'react'
 import {LinesThree} from './lines' 
 import {MdOutlineRestartAlt} from "react-icons/md"
 import Message from './message'
+import {CSSTransition} from 'react-transition-group'
 
 function isWinner(board) {
     let result = ""
@@ -97,7 +98,6 @@ export default class Game extends React.Component {
         } 
     }
 
-
     restart() {
         this.setState({board: Array(9).fill(""),
             player: "X" ,
@@ -105,17 +105,15 @@ export default class Game extends React.Component {
             message: ""})
     }
 
-
     render() {
         return (
             <div className="Screen">
-                        <Message className="Message" value={this.state.message} />
-                    <div className={this.state.visible? "fadeIn" : "fadeOut"}>
-                        <Board value={this.state.board} onClick={this.handleClick}/> 
-                    </div>
-                        <MdOutlineRestartAlt className="Icon" onClick={this.restart}/>
+                <CSSTransition in={!this.state.visible} timeout={1000} classNames="message" unmountOnExit>
+                    <Message className="Message" value={this.state.message} />
+                </CSSTransition>
+                {this.state.visible && <Board value={this.state.board} onClick={this.handleClick}/>}
+                <MdOutlineRestartAlt className="Icon" onClick={this.restart}/>
             </div>
         )
     }
 }
-

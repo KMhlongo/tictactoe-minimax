@@ -7,6 +7,7 @@
 
 .Screen {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   position: fixed; 
@@ -18,26 +19,26 @@
   background-color: #0b4abd;
 }
 
-.fadeIn {
-  width: auto;
-  display: block;
-  opacity: 1;
-  width: 250px;
-  height: 250px;
-  transition: width 0.5s, height 0.5s, opacity 0.5s 0.5s;
-}
-
-.fadeOut{
-  width: auto;
-  display: block;
-  display: flex;
-  opacity: 0;
-  width: 0;
-  height: 0;
-  transition: width 0.5s, height 0.5s, opacity 0s 0s;
-}
-
 .Message {
   font-size: 50px;
   color: whtie;
+}
+
+.message-enter {
+  opacity: 0;
+  transform: scale(0.9);
+}
+.message-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 1s, transform 1s;
+}
+.message-exit {
+  opacity: 1;
+}
+.message-exit-active {
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 1s, transform 1s;
+  display: none;
 }
