@@ -6,6 +6,7 @@ const style = {
     fontSize: "50px",
     backgroundColor: "#0b4abd",
     color: "white",
+    margin: "2px"
 }
 
 export default function Tile(props) {
