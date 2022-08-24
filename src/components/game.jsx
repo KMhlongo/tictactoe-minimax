@@ -78,7 +78,7 @@ export default class Game extends React.Component {
             setTimeout(() => {this.setState({player: "", visible: false, message: "draw!"})}
             ,1000)  
         } else if(result === "O" && this.state.player !== "") {
-            setTimeout(()=>{this.setState({player: "", visible: false, message: "O is the winner!"})}
+            setTimeout(()=>{this.setState({player: "", visible: false, message: "you lose"})}
             ,1000)
         } else if (this.state.player === "O") {
             var pos = miniMaxPrune(this.state.board, 0, true).pos
