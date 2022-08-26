@@ -9,6 +9,7 @@ const style = {
 	display: "grid",
 	gridTemplate: "repeat(3, 1fr) / repeat(3, 1fr)",
     boxShadow: "inset 0 0 0 3px #0b4abd",
+    margin: "auto"
 }
 
 export default function Board(props) {

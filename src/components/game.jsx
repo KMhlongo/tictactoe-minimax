@@ -3,7 +3,10 @@ import React from 'react'
 import {LinesThree} from './lines' 
 import {MdOutlineRestartAlt} from "react-icons/md"
 import Message from './message'
-import {CSSTransition} from 'react-transition-group'
+import {SwitchTransition, CSSTransition} from 'react-transition-group'
+import 'bootstrap/dist/css/bootstrap.css'
+import {Row, Col, Container} from 'react-bootstrap'
+import '../App.css'
 
 function isWinner(board) {
     let result = ""
@@ -99,18 +102,33 @@ export default class Game extends React.Component {
         this.setState({board: Array(9).fill(""),
             player: "X" ,
             visible: true, 
-            message: ""})
+            message: "",
+            test: false})
     }
 
     render() {
         return (
-            <div className="Screen">
-                <CSSTransition in={!this.state.visible} timeout={1000} classNames="message" unmountOnExit>
-                    <Message className="Message" value={this.state.message} />
-                </CSSTransition>
-                {this.state.visible && <Board value={this.state.board} onClick={this.handleClick}/>}
-                <MdOutlineRestartAlt className="Icon" onClick={this.restart}/>
-            </div>
-        )
+            <Container fluid style={{backgroundColor:"#0b4abd", display: "flex", justifyContent:"center", alignItems:"center"}} className="min-vh-100">
+                <Row>
+                    <Col>
+                        <SwitchTransition mode="out-in">
+                            <CSSTransition
+                                key={this.state.visible}
+                                addEndListener = {(node, done) => {
+                                    node.addEventListener("transitionend", done, false);
+                                }}
+                                classNames="fade">
+                                <div>
+                                    {this.state.visible ? 
+                                        <div><Board value={this.state.board} onClick={this.handleClick}/></div> : 
+                                        <div><Message value={this.state.message} /></div>}
+                                </div>
+                            </CSSTransition>
+                        </SwitchTransition>
+                        <MdOutlineRestartAlt className="Icon" onClick={this.restart}/>
+                    </Col>
+                </Row>
+            </Container>
+    )
     }
 }
